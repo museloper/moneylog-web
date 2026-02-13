@@ -59,7 +59,7 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
           >
             회원가입
           </button>
@@ -71,7 +71,7 @@ export default function SignupPage() {
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="text-green-600 font-semibold hover:underline"
+            className="text-green-600 font-semibold hover:underline cursor-pointer"
           >
             로그인
           </button>

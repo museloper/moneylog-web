@@ -1,26 +1,39 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import { useAuthStore } from '@/store/authStore'
+import { loginApi } from '@/api/auth'
 
 import logo from '@/assets/images/logo.png'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const login = useAuthStore((state) => state.login)
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault() // 새로고침 방지
+  useEffect(() => {
+    // 임시 ID/PW 자동 입력
+    setEmail('sample@sample.com')
+    setPassword('sample')
+  })
 
-    console.log('이메일:', email)
-    console.log('비밀번호:', password)
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault() // 새로고침 방지
 
     if (!email || !password) {
       alert('이메일과 비밀번호를 입력하세요')
       return
     }
 
-    // 나중에 여기서 API 호출
+    try {
+      const data = await loginApi(email, password)
+      login(data.accessToken)
+      navigate('/')
+    } catch (error) {
+      alert('로그인 실패')
+    }
   }
 
   return (
@@ -54,7 +67,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition"
+            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
           >
             로그인
           </button>
@@ -71,7 +84,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => navigate('/signup')}
-            className="text-green-600 font-semibold"
+            className="text-green-600 font-semibold cursor-pointer"
           >
             회원가입
           </button>
