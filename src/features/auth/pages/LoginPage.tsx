@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useAuthStore } from '@/store/authStore'
-import { loginApi } from '@/api/auth'
+import { useAuthStore } from '@/features/auth/store'
+import { loginApi } from '@/features/auth/api'
 
 import logo from '@/assets/images/logo.png'
 

@@ -6,13 +6,17 @@ import router from '@/router'
 
 import '@/assets/css/index.css'
 
-if (import.meta.env.DEV) {
-  const { worker } = await import('@/mocks/browser')
-  worker.start()
+const enableMocking = async () => {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('@/mocks/browser')
+    await worker.start()
+  }
 }
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+enableMocking().then(() => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  )
+})
