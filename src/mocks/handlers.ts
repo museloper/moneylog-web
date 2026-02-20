@@ -21,4 +21,11 @@ export const handlers = [
       status: 401,
     })
   }),
+
+  http.get('/api/dashboard/summary', () => {
+    return HttpResponse.json({
+      income: 4_000_000,
+      expense: 3_500_000,
+    })
+  }),
 ]

@@ -1,7 +1,7 @@
-import axios from 'axios'
+import { apiClient } from '@/shared/api/client'
 
 export const loginApi = async (email: string, password: string) => {
-  const response = await axios.post('/api/login', {
+  const response = await apiClient.post('/login', {
     email,
     password,
   })
