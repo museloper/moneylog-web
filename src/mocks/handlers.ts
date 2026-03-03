@@ -22,10 +22,39 @@ export const handlers = [
     })
   }),
 
-  http.get('/api/dashboard/summary', () => {
+  http.get('/api/dashboard/balance', () => {
     return HttpResponse.json({
       income: 4_000_000,
       expense: 3_500_000,
     })
+  }),
+
+  http.get('/api/dashboard/transactions', () => {
+    return HttpResponse.json([
+      {
+        id: 1,
+        title: '스타벅스',
+        category: '식비',
+        amount: 12000,
+        type: 'expense',
+        date: '2026-03-03',
+      },
+      {
+        id: 2,
+        title: '택시',
+        category: '교통',
+        amount: 8000,
+        type: 'expense',
+        date: '2026-03-02',
+      },
+      {
+        id: 3,
+        title: '급여',
+        category: '월급',
+        amount: 4000000,
+        type: 'income',
+        date: '2026-03-01',
+      },
+    ])
   }),
 ]

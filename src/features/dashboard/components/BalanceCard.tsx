@@ -1,13 +1,12 @@
-interface BalanceCardProps {
-  income: number
-  expense: number
-}
+import { cardStyle } from '@/shared/ui/cardStyle'
 
-export default function BalanceCard({ income, expense }: BalanceCardProps) {
+import type { Balance } from '@/features/dashboard/types'
+
+export default function BalanceCard({ income, expense }: Balance) {
   const balance = income - expense
 
   return (
-    <div className="rounded-3xl overflow-hidden bg-white shadow-sm">
+    <div className={`${cardStyle} overflow-hidden`}>
       {/* 상단 컬러 영역 */}
       <div className="bg-brand-soft px-6 py-6">
         <div className="text-sm text-gray-600 mb-2">이번 달 남은 금액</div>
