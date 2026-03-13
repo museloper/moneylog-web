@@ -5,6 +5,7 @@ import { getBalanceApi, getTransactionsApi } from '@/features/dashboard/api'
 
 import BalanceCard from '@/features/dashboard/components/BalanceCard'
 import TransactionCard from '@/features/dashboard/components/TransactionCard'
+import TopCategoriesCard from '@/features/dashboard/components/TopCategoriesCard'
 
 export default function DashboardPage() {
   const [balance, setBalance] = useState<Balance | null>(null)
@@ -49,6 +50,7 @@ export default function DashboardPage() {
     <div className="space-y-4">
       <BalanceCard income={balance.income} expense={balance.expense} />
       <TransactionCard transactions={transactions} />
+      <TopCategoriesCard transactions={transactions} />
     </div>
   )
 }
