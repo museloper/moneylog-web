@@ -17,7 +17,7 @@ export default function LoginPage() {
     // 임시 ID/PW 자동 입력
     setEmail('sample@sample.com')
     setPassword('sample')
-  })
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault() // 새로고침 방지
@@ -50,7 +50,7 @@ export default function LoginPage() {
           <input
             type="email"
             placeholder="이메일"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
@@ -59,7 +59,7 @@ export default function LoginPage() {
           <input
             type="password"
             placeholder="비밀번호"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
@@ -67,7 +67,7 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
+            className="w-full bg-brand-strong text-white py-2 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
           >
             로그인
           </button>
@@ -84,7 +84,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => navigate('/signup')}
-            className="text-green-600 font-semibold cursor-pointer"
+            className="text-brand-strong font-semibold cursor-pointer"
           >
             회원가입
           </button>

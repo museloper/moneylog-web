@@ -36,7 +36,7 @@ export default function SignupPage() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
           />
 
           <input
@@ -45,7 +45,7 @@ export default function SignupPage() {
             autoComplete="off"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
           />
 
           <input
@@ -54,12 +54,12 @@ export default function SignupPage() {
             autoComplete="off"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
           />
 
           <button
             type="submit"
-            className="w-full bg-green-500 text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition cursor-pointer"
+            className="w-full bg-brand-strong text-white py-2 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
           >
             회원가입
           </button>
@@ -71,7 +71,7 @@ export default function SignupPage() {
           <button
             type="button"
             onClick={() => navigate('/login')}
-            className="text-green-600 font-semibold hover:underline cursor-pointer"
+            className="text-brand-strong font-semibold hover:underline cursor-pointer"
           >
             로그인
           </button>

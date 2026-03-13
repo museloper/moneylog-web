@@ -9,6 +9,7 @@ import AppLayout from '@/layouts/AppLayout'
 import LoginPage from '@/features/auth/pages/LoginPage'
 import SignupPage from '@/features/auth/pages/SignupPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
+import ComingSoonPage from '@/shared/pages/ComingSoonPage'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,18 @@ const router = createBrowserRouter([
           {
             path: '/dashboard',
             element: <DashboardPage />,
+          },
+          {
+            path: '/transactions',
+            element: <ComingSoonPage title="거래 내역" />,
+          },
+          {
+            path: '/stats',
+            element: <ComingSoonPage title="통계" />,
+          },
+          {
+            path: '/settings',
+            element: <ComingSoonPage title="설정" />,
           },
         ],
       },

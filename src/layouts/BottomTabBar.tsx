@@ -17,9 +17,7 @@ export default function BottomTabBar() {
       <NavLink
         to="/dashboard"
         className={({ isActive }) =>
-          `flex-1 flex flex-col items-center justify-center text-[11px] transition-all duration-200 ${
-            isActive ? 'text-brand-strong' : 'text-gray-400'
-          }`
+          `${baseClass} flex-1 ${isActive ? 'text-brand-strong' : 'text-gray-400'}`
         }
       >
         <Home size={22} strokeWidth={2.3} />홈

@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/client'
 
-export const loginApi = async (email: string, password: string) => {
+export const loginApi = async (email: string, password: string): Promise<{ accessToken: string }> => {
   const response = await apiClient.post('/login', {
     email,
     password,
