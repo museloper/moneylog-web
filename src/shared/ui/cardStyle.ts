@@ -1,5 +1,5 @@
 export const cardStyle = `
-  rounded-3xl 
+  rounded-2xl
   bg-white 
   shadow-md 
   hover:shadow-xl 
