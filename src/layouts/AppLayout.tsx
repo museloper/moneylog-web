@@ -4,9 +4,9 @@ import BottomTabBar from './BottomTabBar'
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
+    <div className="h-dvh bg-gray-100 flex justify-center">
       {/* 모바일 프레임 */}
-      <div className="w-full max-w-[480px] bg-white flex flex-col min-h-screen relative">
+      <div className="w-full max-w-[480px] bg-white flex flex-col h-dvh relative">
         {/* 상단 헤더 */}
         <Header />
 
@@ -14,8 +14,8 @@ export default function AppLayout() {
         <main
           className="
             flex-1
-            overflow-y-auto
-            px-4 pt-4 pb-24
+            overflow-y-auto overscroll-y-contain
+            px-4 pt-4 pb-28
             bg-gray-50
           "
         >

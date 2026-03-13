@@ -5,3 +5,20 @@
   --color-brand-strong: #3faf8e;
   --color-brand-soft: #e6f6f1;
 }
+
+/* 모바일 탭 하이라이트 제거 */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 버튼/링크 터치 딜레이 제거 */
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* iOS 텍스트 크기 자동 조정 방지 */
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
