@@ -12,3 +12,11 @@ apiClient.interceptors.request.use((config) => {
   }
   return config
 })
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error.response?.data?.message ?? '오류가 발생했습니다'
+    return Promise.reject(new Error(message))
+  },
+)

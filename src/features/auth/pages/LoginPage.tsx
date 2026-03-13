@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
 import { useAuthStore } from '@/features/auth/store'
 import { loginApi } from '@/features/auth/api'
@@ -23,7 +24,7 @@ export default function LoginPage() {
     e.preventDefault() // 새로고침 방지
 
     if (!email || !password) {
-      alert('이메일과 비밀번호를 입력하세요')
+      toast.error('이메일과 비밀번호를 입력하세요')
       return
     }
 
@@ -32,7 +33,7 @@ export default function LoginPage() {
       login(data.accessToken)
       navigate('/')
     } catch (error) {
-      alert('로그인 실패')
+      toast.error(error instanceof Error ? error.message : '로그인 실패')
     }
   }
 
