@@ -100,7 +100,7 @@ export default function CouplePage() {
               maxLength={8}
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value.toUpperCase())}
-              className="w-full border rounded-lg px-4 py-2 text-center font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-strong uppercase"
+              className="w-full border rounded-lg px-4 py-2 text-center text-sm tracking-widest focus:outline-none focus:ring-2 focus:ring-brand-strong uppercase text-gray-500"
             />
             <button
               onClick={handleJoin}
