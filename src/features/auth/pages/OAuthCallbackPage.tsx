@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { useAuthStore } from '@/features/auth/store'
+import { getCoupleStatus } from '@/features/couple/api'
 
 export default function OAuthCallbackPage() {
   const [searchParams] = useSearchParams()
@@ -10,12 +11,20 @@ export default function OAuthCallbackPage() {
 
   useEffect(() => {
     const token = searchParams.get('token')
-    if (token) {
-      login(token)
-      navigate('/dashboard', { replace: true })
-    } else {
+    if (!token) {
       navigate('/login', { replace: true })
+      return
     }
+
+    login(token)
+
+    getCoupleStatus()
+      .then(({ linked }) => {
+        navigate(linked ? '/dashboard' : '/couple/setup', { replace: true })
+      })
+      .catch(() => {
+        navigate('/login', { replace: true })
+      })
   }, [])
 
   return (

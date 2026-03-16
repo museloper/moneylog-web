@@ -8,6 +8,7 @@ import AppLayout from '@/layouts/AppLayout'
 
 import LoginPage from '@/features/auth/pages/LoginPage'
 import OAuthCallbackPage from '@/features/auth/pages/OAuthCallbackPage'
+import CouplePage from '@/features/couple/pages/CouplePage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import ComingSoonPage from '@/shared/pages/ComingSoonPage'
 
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
     element: <RequireAuth />,
     children: [
       {
+        path: '/couple/setup',
+        element: <CouplePage />,
+      },
+      {
         element: <AppLayout />, // 인증된 사용자에게 공통 레이아웃 제공
         children: [
           {
@@ -58,5 +63,6 @@ const router = createBrowserRouter([
     ],
   },
 ])
+
 
 export default router

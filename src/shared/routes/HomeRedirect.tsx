@@ -1,11 +1,23 @@
-// src/shared/routes/HomeRedirect.tsx
-
+import { useState, useEffect } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/features/auth/store'
+import { getCoupleStatus } from '@/features/couple/api'
 
 export default function HomeRedirect() {
   const isLogin = useAuthStore((state) => state.isLogin)
+  const [destination, setDestination] = useState<string | null>(null)
 
-  // 로그인 여부에 따라 대시보드 또는 로그인 페이지로 리다이렉트
-  return isLogin ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+  useEffect(() => {
+    if (!isLogin) {
+      setDestination('/login')
+      return
+    }
+    getCoupleStatus()
+      .then(({ linked }) => setDestination(linked ? '/dashboard' : '/couple/setup'))
+      .catch(() => setDestination('/login'))
+  }, [isLogin])
+
+  if (!destination) return null
+
+  return <Navigate to={destination} replace />
 }
