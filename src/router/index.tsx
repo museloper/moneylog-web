@@ -7,7 +7,7 @@ import RedirectIfAuth from '@/shared/routes/RedirectIfAuth'
 import AppLayout from '@/layouts/AppLayout'
 
 import LoginPage from '@/features/auth/pages/LoginPage'
-import SignupPage from '@/features/auth/pages/SignupPage'
+import OAuthCallbackPage from '@/features/auth/pages/OAuthCallbackPage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import ComingSoonPage from '@/shared/pages/ComingSoonPage'
 
@@ -17,16 +17,16 @@ const router = createBrowserRouter([
     element: <HomeRedirect />,
   },
   {
+    path: '/oauth/callback',
+    element: <OAuthCallbackPage />,
+  },
+  {
     // 인증된 사용자는 로그인 및 회원가입 페이지에 접근할 수 없도록 설정
     element: <RedirectIfAuth />,
     children: [
       {
         path: '/login',
         element: <LoginPage />,
-      },
-      {
-        path: '/signup',
-        element: <SignupPage />,
       },
     ],
   },

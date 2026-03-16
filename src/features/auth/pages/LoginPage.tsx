@@ -1,94 +1,27 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'sonner'
-
-import { useAuthStore } from '@/features/auth/store'
-import { loginApi } from '@/features/auth/api'
-
 import logo from '@/assets/images/logo.png'
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const login = useAuthStore((state) => state.login)
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  useEffect(() => {
-    // 임시 ID/PW 자동 입력
-    setEmail('sample@sample.com')
-    setPassword('sample')
-  }, [])
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault() // 새로고침 방지
-
-    if (!email || !password) {
-      toast.error('이메일과 비밀번호를 입력하세요')
-      return
-    }
-
-    try {
-      const data = await loginApi(email, password)
-      login(data.accessToken)
-      navigate('/')
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : '로그인 실패')
-    }
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm bg-white p-6 rounded-2xl shadow-md">
-        {/* 로고 + 타이틀 */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <img src={logo} alt="머니로그 로고" className="w-8 h-8" />
+        <div className="flex flex-col items-center mb-8">
+          <img src={logo} alt="머니로그 로고" className="w-16 h-16 mb-3" />
           <h1 className="text-2xl font-bold text-gray-800">머니로그</h1>
+          <p className="text-sm text-gray-400 mt-1">내 소비를 한눈에 관리하세요</p>
         </div>
 
-        {/* 로그인 폼 */}
-        <form className="space-y-4" onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="이메일"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
+        <p className="text-xs text-center text-gray-400 mb-3">소셜 계정으로 빠르게 시작하세요</p>
 
-          <input
-            type="password"
-            placeholder="비밀번호"
-            className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-strong"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-          />
-
-          <button
-            type="submit"
-            className="w-full bg-brand-strong text-white py-2 rounded-lg font-semibold hover:opacity-90 transition cursor-pointer"
-          >
-            로그인
-          </button>
-        </form>
-
-        <div className="flex items-center my-6">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="px-3 text-xs text-gray-400">또는</span>
-          <div className="flex-1 h-px bg-gray-200" />
-        </div>
-
-        <div className="text-center text-sm mt-4">
-          <span className="text-gray-500">계정이 없으신가요? </span>
+        <div className="space-y-3">
           <button
             type="button"
-            onClick={() => navigate('/signup')}
-            className="text-brand-strong font-semibold cursor-pointer"
+            onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+            className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-lg py-2 hover:bg-gray-50 transition cursor-pointer"
           >
-            회원가입
+            <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+            <span className="text-sm font-medium text-gray-700">Google로 계속하기</span>
           </button>
+
         </div>
       </div>
     </div>
