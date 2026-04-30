@@ -5,6 +5,7 @@ import { getCoupleStatus } from '@/features/couple/api'
 
 export default function HomeRedirect() {
   const isLogin = useAuthStore((state) => state.isLogin)
+  const setLinked = useAuthStore((state) => state.setLinked)
   const [destination, setDestination] = useState<string | null>(null)
 
   useEffect(() => {
@@ -13,7 +14,10 @@ export default function HomeRedirect() {
       return
     }
     getCoupleStatus()
-      .then(({ linked }) => setDestination(linked ? '/dashboard' : '/couple/setup'))
+      .then(({ linked }) => {
+        setLinked(linked)
+        setDestination(linked ? '/dashboard' : '/couple/setup')
+      })
       .catch(() => setDestination('/login'))
   }, [isLogin])
 

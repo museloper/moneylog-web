@@ -9,6 +9,7 @@ import logo from '@/assets/images/logo.png'
 export default function CouplePage() {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
+  const setLinked = useAuthStore((state) => state.setLinked)
   const [generatedCode, setGeneratedCode] = useState('')
   const [inputCode, setInputCode] = useState('')
 
@@ -43,6 +44,7 @@ export default function CouplePage() {
     }
     try {
       await joinCouple(inputCode.trim())
+      setLinked(true)
       toast.success('커플 연동이 완료됐습니다!')
       navigate('/dashboard', { replace: true })
     } catch (error) {
