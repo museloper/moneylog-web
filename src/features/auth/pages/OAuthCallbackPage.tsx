@@ -28,8 +28,9 @@ export default function OAuthCallbackPage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <p className="text-gray-500">로그인 처리 중...</p>
+    <div className="min-h-dvh flex flex-col items-center justify-center bg-gray-50 gap-3">
+      <div className="w-8 h-8 border-2 border-gray-200 border-t-brand-strong rounded-full animate-spin" />
+      <p className="text-sm text-gray-500">로그인 처리 중</p>
     </div>
   )
 }

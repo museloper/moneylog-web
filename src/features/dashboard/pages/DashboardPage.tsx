@@ -32,16 +32,18 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <span className="text-gray-500">로딩 중...</span>
+      <div className="space-y-4">
+        <div className="h-32 rounded-2xl bg-gray-100 animate-pulse" />
+        <div className="h-48 rounded-2xl bg-gray-100 animate-pulse" />
+        <div className="h-56 rounded-2xl bg-gray-100 animate-pulse" />
       </div>
     )
   }
 
   if (!balance) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <span className="text-gray-500">데이터를 불러올 수 없습니다.</span>
+      <div className="flex flex-col items-center justify-center h-full gap-2 text-gray-400">
+        <p className="text-sm">데이터를 불러올 수 없어요</p>
       </div>
     )
   }

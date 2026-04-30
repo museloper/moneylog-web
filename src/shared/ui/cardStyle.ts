@@ -1,9 +1,6 @@
 export const cardStyle = `
   rounded-2xl
-  bg-white 
-  shadow-md 
-  hover:shadow-xl 
-  hover:-translate-y-1 
-  transition-all 
-  duration-300
-  `
+  bg-white
+  border border-gray-100
+  shadow-[0_1px_3px_rgba(0,0,0,0.04)]
+`
