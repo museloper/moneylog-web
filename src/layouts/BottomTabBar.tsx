@@ -1,7 +1,11 @@
 import { NavLink } from 'react-router-dom'
 import { Home, Receipt, BarChart3, Settings, Plus } from 'lucide-react'
 
+import { useTransactionStore } from '@/features/transactions/store'
+
 export default function BottomTabBar() {
+  const openForm = useTransactionStore((state) => state.openForm)
+
   const baseClass =
     'flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors duration-200'
 
@@ -58,7 +62,8 @@ export default function BottomTabBar() {
 
       <button
         type="button"
-        aria-label="추가"
+        onClick={openForm}
+        aria-label="거래 추가"
         className="
           absolute left-1/2 -translate-x-1/2 -top-6
           w-14 h-14 rounded-full

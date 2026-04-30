@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import type { Balance, Transaction } from '@/features/dashboard/types'
 import { getBalanceApi, getTransactionsApi } from '@/features/dashboard/api'
+import { useTransactionStore } from '@/features/transactions/store'
 
 import BalanceCard from '@/features/dashboard/components/BalanceCard'
 import TransactionCard from '@/features/dashboard/components/TransactionCard'
@@ -11,6 +12,7 @@ export default function DashboardPage() {
   const [balance, setBalance] = useState<Balance | null>(null)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
+  const lastCreatedAt = useTransactionStore((state) => state.lastCreatedAt)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +30,7 @@ export default function DashboardPage() {
     }
 
     fetchData()
-  }, [])
+  }, [lastCreatedAt])
 
   if (loading) {
     return (

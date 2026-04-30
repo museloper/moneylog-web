@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import BottomTabBar from './BottomTabBar'
+import TransactionFormSheet from '@/features/transactions/components/TransactionFormSheet'
 
 export default function AppLayout() {
   return (
@@ -26,6 +27,9 @@ export default function AppLayout() {
         <div className="fixed bottom-0 w-full max-w-[480px]">
           <BottomTabBar />
         </div>
+
+        {/* 거래 추가 시트 */}
+        <TransactionFormSheet />
       </div>
     </div>
   )
