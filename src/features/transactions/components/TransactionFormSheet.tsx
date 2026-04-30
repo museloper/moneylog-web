@@ -4,7 +4,8 @@ import { toast } from 'sonner'
 
 import { useTransactionStore } from '@/features/transactions/store'
 import { createTransaction } from '@/features/transactions/api'
-import { getCategories, type TransactionTypeValue } from '@/features/transactions/categories'
+import { useCategoryStore } from '@/features/settings/store'
+import type { TransactionTypeValue } from '@/features/transactions/categories'
 
 const todayString = () => {
   const d = new Date()
@@ -28,11 +29,13 @@ export default function TransactionFormSheet() {
   const [date, setDate] = useState(todayString())
   const [submitting, setSubmitting] = useState(false)
 
+  const { categories: allCategories, load: loadCategories } = useCategoryStore()
+
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStartYRef = useRef(0)
 
-  // 시트가 열릴 때마다 입력 초기화
+  // 시트가 열릴 때마다 입력 초기화 + 카테고리 로드
   useEffect(() => {
     if (isOpen) {
       setType('expense')
@@ -41,6 +44,7 @@ export default function TransactionFormSheet() {
       setTitle('')
       setDate(todayString())
       setDragOffset(0)
+      loadCategories()
     }
   }, [isOpen])
 
@@ -54,7 +58,7 @@ export default function TransactionFormSheet() {
     }
   }, [isOpen])
 
-  const categories = getCategories(type)
+  const categories = allCategories.filter((c) => c.type === type)
 
   const handleAmountChange = (value: string) => {
     const onlyDigits = value.replace(/[^0-9]/g, '')
@@ -219,16 +223,17 @@ export default function TransactionFormSheet() {
               <div className="flex flex-wrap gap-2">
                 {categories.map((c) => (
                   <button
-                    key={c}
+                    key={c.id}
                     type="button"
-                    onClick={() => setCategory(c)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition cursor-pointer ${
-                      category === c
+                    onClick={() => setCategory(c.name)}
+                    className={`flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full text-sm font-medium transition cursor-pointer ${
+                      category === c.name
                         ? 'bg-brand-strong text-white'
                         : 'bg-gray-100 text-gray-600 active:bg-gray-200'
                     }`}
                   >
-                    {c}
+                    {c.emoji && <span className="text-base leading-none">{c.emoji}</span>}
+                    {c.name}
                   </button>
                 ))}
               </div>
