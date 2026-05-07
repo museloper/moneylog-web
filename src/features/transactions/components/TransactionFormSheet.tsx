@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useTransactionStore } from '@/features/transactions/store'
@@ -7,12 +7,29 @@ import { createTransaction } from '@/features/transactions/api'
 import { useCategoryStore } from '@/features/settings/store'
 import type { TransactionTypeValue } from '@/features/transactions/categories'
 
-const todayString = () => {
-  const d = new Date()
+const formatDateValue = (d: Date) => {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
+}
+
+const todayString = () => formatDateValue(new Date())
+
+const yesterdayString = () => {
+  const d = new Date()
+  d.setDate(d.getDate() - 1)
+  return formatDateValue(d)
+}
+
+const formatDateLabel = (dateStr: string) => {
+  const d = new Date(dateStr)
+  const today = todayString()
+  const yesterday = yesterdayString()
+  if (dateStr === today) return '오늘'
+  if (dateStr === yesterday) return '어제'
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토']
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${weekdays[d.getDay()]})`
 }
 
 const CLOSE_THRESHOLD = 120
@@ -34,6 +51,7 @@ export default function TransactionFormSheet() {
   const [dragOffset, setDragOffset] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const dragStartYRef = useRef(0)
+  const dateInputRef = useRef<HTMLInputElement>(null)
 
   // 시트가 열릴 때마다 입력 초기화 + 카테고리 로드
   useEffect(() => {
@@ -68,7 +86,6 @@ export default function TransactionFormSheet() {
   const formattedAmount = amount ? Number(amount).toLocaleString() : ''
 
   const handleDragStart = (e: React.PointerEvent) => {
-    // 닫기 버튼 등 내부 버튼 클릭 시 드래그 시작 안 함
     if ((e.target as HTMLElement).closest('button')) return
     setIsDragging(true)
     dragStartYRef.current = e.clientY
@@ -125,6 +142,11 @@ export default function TransactionFormSheet() {
     }
   }
 
+  const accentText = type === 'expense' ? 'text-rose-500' : 'text-emerald-600'
+  const accentBg = type === 'expense' ? 'bg-rose-500' : 'bg-emerald-600'
+  const accentBgSoft = type === 'expense' ? 'bg-rose-50' : 'bg-emerald-50'
+  const accentRing = type === 'expense' ? 'ring-rose-400' : 'ring-emerald-400'
+
   return (
     <div
       className={`fixed inset-0 z-50 ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
@@ -148,16 +170,16 @@ export default function TransactionFormSheet() {
           transition: isDragging ? 'none' : 'transform 300ms ease-out',
         }}
       >
-        <div className="flex flex-col max-h-[90dvh]">
+        <div className="flex flex-col max-h-[92dvh]">
           {/* 핸들 + 헤더 (드래그 영역) */}
           <div
-            className="px-5 pt-3 pb-4 touch-none select-none cursor-grab active:cursor-grabbing"
+            className="px-5 pt-3 pb-2 touch-none select-none cursor-grab active:cursor-grabbing"
             onPointerDown={handleDragStart}
             onPointerMove={handleDragMove}
             onPointerUp={handleDragEnd}
             onPointerCancel={handleDragEnd}
           >
-            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
             <div className="flex items-center justify-between">
               <h2 className="text-base font-semibold text-gray-900">새 거래 추가</h2>
               <button
@@ -172,7 +194,7 @@ export default function TransactionFormSheet() {
           </div>
 
           {/* 본문 (스크롤) */}
-          <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-5">
+          <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-6">
             {/* 타입 토글 */}
             <div className="grid grid-cols-2 bg-gray-100 rounded-xl p-1">
               <button
@@ -181,7 +203,7 @@ export default function TransactionFormSheet() {
                   setType('expense')
                   setCategory('')
                 }}
-                className={`py-2 rounded-lg text-sm font-semibold transition cursor-pointer ${
+                className={`py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer ${
                   type === 'expense' ? 'bg-white text-rose-500 shadow-sm' : 'text-gray-500'
                 }`}
               >
@@ -193,7 +215,7 @@ export default function TransactionFormSheet() {
                   setType('income')
                   setCategory('')
                 }}
-                className={`py-2 rounded-lg text-sm font-semibold transition cursor-pointer ${
+                className={`py-2.5 rounded-lg text-sm font-semibold transition cursor-pointer ${
                   type === 'income' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-500'
                 }`}
               >
@@ -201,41 +223,53 @@ export default function TransactionFormSheet() {
               </button>
             </div>
 
-            {/* 금액 */}
-            <div>
-              <label className="text-xs font-medium text-gray-500 block mb-2">금액</label>
-              <div className="flex items-baseline gap-1 border-b-2 border-gray-200 focus-within:border-brand-strong pb-2 transition-colors">
-                <span className="text-2xl font-bold text-gray-400">₩</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="0"
-                  value={formattedAmount}
-                  onChange={(e) => handleAmountChange(e.target.value)}
-                  className="flex-1 text-2xl font-bold text-gray-900 focus:outline-none placeholder:text-gray-300 bg-transparent"
-                />
-              </div>
+            {/* 히어로 금액 디스플레이 */}
+            <div className="flex items-baseline justify-center gap-2 py-2">
+              <span className="text-2xl font-bold text-gray-300">₩</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
+                value={formattedAmount}
+                onChange={(e) => handleAmountChange(e.target.value)}
+                className={`flex-1 text-center text-4xl font-bold focus:outline-none placeholder:text-gray-200 bg-transparent ${accentText}`}
+                style={{ caretColor: type === 'expense' ? '#f43f5e' : '#059669' }}
+              />
             </div>
 
-            {/* 카테고리 */}
+            {/* 카테고리 그리드 */}
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-2">카테고리</label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setCategory(c.name)}
-                    className={`flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-full text-sm font-medium transition cursor-pointer ${
-                      category === c.name
-                        ? 'bg-brand-strong text-white'
-                        : 'bg-gray-100 text-gray-600 active:bg-gray-200'
-                    }`}
-                  >
-                    {c.emoji && <span className="text-base leading-none">{c.emoji}</span>}
-                    {c.name}
-                  </button>
-                ))}
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-medium text-gray-500">카테고리</label>
+                {categories.length === 0 && (
+                  <span className="text-[10px] text-gray-400">설정에서 추가해보세요</span>
+                )}
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {categories.map((c) => {
+                  const selected = category === c.name
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setCategory(c.name)}
+                      className={`flex flex-col items-center justify-center gap-1 py-3 rounded-2xl transition cursor-pointer ${
+                        selected
+                          ? `${accentBgSoft} ring-2 ${accentRing}`
+                          : 'bg-gray-50 active:bg-gray-100'
+                      }`}
+                    >
+                      <span className="text-2xl leading-none">{c.emoji ?? '📌'}</span>
+                      <span
+                        className={`text-[11px] font-medium truncate max-w-full px-1 ${
+                          selected ? accentText : 'text-gray-600'
+                        }`}
+                      >
+                        {c.name}
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -252,14 +286,47 @@ export default function TransactionFormSheet() {
               />
             </div>
 
-            {/* 날짜 */}
+            {/* 날짜 (빠른 버튼 + 직접 선택) */}
             <div>
               <label className="text-xs font-medium text-gray-500 block mb-2">날짜</label>
+              <div className="flex gap-2">
+                {([todayString(), yesterdayString()] as const).map((d) => (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setDate(d)}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
+                      date === d
+                        ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
+                        : 'bg-gray-50 text-gray-600 active:bg-gray-100'
+                    }`}
+                  >
+                    {d === todayString() ? '오늘' : '어제'}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => dateInputRef.current?.showPicker?.()}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
+                    date !== todayString() && date !== yesterdayString()
+                      ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
+                      : 'bg-gray-50 text-gray-600 active:bg-gray-100'
+                  }`}
+                >
+                  <Calendar size={14} strokeWidth={2} />
+                  {date !== todayString() && date !== yesterdayString()
+                    ? formatDateLabel(date)
+                    : '직접 선택'}
+                </button>
+              </div>
               <input
+                ref={dateInputRef}
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-brand-strong focus:bg-white transition-colors"
+                className="sr-only"
+                aria-hidden
+                tabIndex={-1}
               />
             </div>
           </div>
@@ -270,7 +337,7 @@ export default function TransactionFormSheet() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-full bg-brand-strong text-white py-3.5 rounded-xl text-sm font-semibold active:opacity-90 transition disabled:opacity-50 cursor-pointer"
+              className={`w-full ${accentBg} text-white py-3.5 rounded-xl text-sm font-semibold active:opacity-90 transition disabled:opacity-50 cursor-pointer`}
             >
               {submitting ? '저장 중...' : '저장하기'}
             </button>

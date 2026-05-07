@@ -5,6 +5,7 @@ export interface CategoryItem {
   name: string
   emoji: string | null
   type: 'income' | 'expense'
+  isDefault: boolean
 }
 
 export const getCategoriesApi = async (): Promise<CategoryItem[]> => {
@@ -18,6 +19,15 @@ export const createCategoryApi = async (
   type: 'income' | 'expense',
 ): Promise<CategoryItem> => {
   const response = await apiClient.post('/categories', { name, emoji, type })
+  return response.data
+}
+
+export const updateCategoryApi = async (
+  id: number,
+  name: string,
+  emoji: string,
+): Promise<CategoryItem> => {
+  const response = await apiClient.patch(`/categories/${id}`, { name, emoji })
   return response.data
 }
 
