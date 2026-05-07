@@ -11,6 +11,7 @@ import OAuthCallbackPage from '@/features/auth/pages/OAuthCallbackPage'
 import CouplePage from '@/features/couple/pages/CouplePage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import SettingsPage from '@/features/settings/pages/SettingsPage'
+import TransactionsPage from '@/features/transactions/pages/TransactionsPage'
 import ComingSoonPage from '@/shared/pages/ComingSoonPage'
 
 const router = createBrowserRouter([
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
           },
           {
             path: '/transactions',
-            element: <ComingSoonPage title="거래 내역" />,
+            element: <TransactionsPage />,
           },
           {
             path: '/stats',
