@@ -12,7 +12,7 @@ import CouplePage from '@/features/couple/pages/CouplePage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import SettingsPage from '@/features/settings/pages/SettingsPage'
 import TransactionsPage from '@/features/transactions/pages/TransactionsPage'
-import ComingSoonPage from '@/shared/pages/ComingSoonPage'
+import StatsPage from '@/features/stats/pages/StatsPage'
 
 const router = createBrowserRouter([
   {
@@ -54,7 +54,7 @@ const router = createBrowserRouter([
           },
           {
             path: '/stats',
-            element: <ComingSoonPage title="통계" />,
+            element: <StatsPage />,
           },
           {
             path: '/settings',
