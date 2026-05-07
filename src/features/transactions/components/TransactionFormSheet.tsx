@@ -224,18 +224,19 @@ export default function TransactionFormSheet() {
             </div>
 
             {/* 히어로 금액 디스플레이 */}
-            <div className="flex items-baseline justify-center gap-2 py-2">
-              <span className="text-2xl font-bold text-gray-300">₩</span>
+            <label className="flex items-baseline justify-center gap-2 py-3 cursor-text">
+              <span className="text-3xl font-bold text-gray-300">₩</span>
               <input
                 type="text"
                 inputMode="numeric"
                 placeholder="0"
                 value={formattedAmount}
                 onChange={(e) => handleAmountChange(e.target.value)}
-                className={`flex-1 text-center text-4xl font-bold focus:outline-none placeholder:text-gray-200 bg-transparent ${accentText}`}
+                size={Math.max(formattedAmount.length, 1)}
+                className={`text-4xl font-bold focus:outline-none placeholder:text-gray-300 bg-transparent ${accentText}`}
                 style={{ caretColor: type === 'expense' ? '#f43f5e' : '#059669' }}
               />
-            </div>
+            </label>
 
             {/* 카테고리 그리드 */}
             <div>
@@ -286,16 +287,21 @@ export default function TransactionFormSheet() {
               />
             </div>
 
-            {/* 날짜 (빠른 버튼 + 직접 선택) */}
+            {/* 날짜 */}
             <div>
-              <label className="text-xs font-medium text-gray-500 block mb-2">날짜</label>
-              <div className="flex gap-2">
+              <div className="flex items-baseline justify-between mb-2">
+                <label className="text-xs font-medium text-gray-500">날짜</label>
+                <span className={`text-xs font-medium ${accentText}`}>
+                  {formatDateLabel(date)}
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
                 {([todayString(), yesterdayString()] as const).map((d) => (
                   <button
                     key={d}
                     type="button"
                     onClick={() => setDate(d)}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
+                    className={`py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
                       date === d
                         ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
                         : 'bg-gray-50 text-gray-600 active:bg-gray-100'
@@ -307,16 +313,14 @@ export default function TransactionFormSheet() {
                 <button
                   type="button"
                   onClick={() => dateInputRef.current?.showPicker?.()}
-                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
+                  className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
                     date !== todayString() && date !== yesterdayString()
                       ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
                       : 'bg-gray-50 text-gray-600 active:bg-gray-100'
                   }`}
                 >
                   <Calendar size={14} strokeWidth={2} />
-                  {date !== todayString() && date !== yesterdayString()
-                    ? formatDateLabel(date)
-                    : '직접 선택'}
+                  직접 선택
                 </button>
               </div>
               <input
