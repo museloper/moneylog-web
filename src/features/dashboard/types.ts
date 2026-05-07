@@ -10,4 +10,5 @@ export interface Transaction {
   amount: number
   type: 'income' | 'expense'
   date: string
+  userId: number
 }

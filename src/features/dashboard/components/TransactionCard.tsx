@@ -4,13 +4,17 @@ import { ChevronRight } from 'lucide-react'
 import { cardStyle } from '@/shared/ui/cardStyle'
 
 import type { Transaction } from '@/features/dashboard/types'
+import type { UserProfile } from '@/features/users/api'
+import Avatar from '@/features/users/components/Avatar'
 
 interface Props {
   transactions: Transaction[]
   emojiMap: Map<string, string>
+  userMap: Map<number, UserProfile>
+  meId: number | undefined
 }
 
-export default function TransactionCard({ transactions, emojiMap }: Props) {
+export default function TransactionCard({ transactions, emojiMap, userMap, meId }: Props) {
   const navigate = useNavigate()
   const preview = transactions.slice(0, 5)
 
@@ -36,6 +40,8 @@ export default function TransactionCard({ transactions, emojiMap }: Props) {
         <div className="space-y-3">
           {preview.map((tx) => {
             const emoji = emojiMap.get(`${tx.type}:${tx.category}`)
+            const user = userMap.get(tx.userId)
+            const userLabel = user?.id === meId ? '나' : user?.name ?? '파트너'
             return (
               <div key={tx.id} className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gray-50 flex items-center justify-center text-lg flex-shrink-0">
@@ -43,7 +49,12 @@ export default function TransactionCard({ transactions, emojiMap }: Props) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-gray-900 truncate">{tx.title}</div>
-                  <div className="text-[11px] text-gray-400">{tx.category}</div>
+                  <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-1">
+                    <span>{tx.category}</span>
+                    <span className="text-gray-300">·</span>
+                    <Avatar user={user} size={18} />
+                    <span className="font-medium text-gray-500 leading-none">{userLabel}</span>
+                  </div>
                 </div>
                 <div
                   className={`text-sm font-semibold flex-shrink-0 ${

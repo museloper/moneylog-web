@@ -6,6 +6,8 @@ import type { Transaction } from '@/features/dashboard/types'
 import { getTransactionsApi, deleteTransactionApi } from '@/features/transactions/api'
 import { useTransactionStore } from '@/features/transactions/store'
 import { useCategoryStore } from '@/features/settings/store'
+import { useUserStore } from '@/features/users/store'
+import Avatar from '@/features/users/components/Avatar'
 
 type FilterType = 'all' | 'expense' | 'income'
 
@@ -36,11 +38,14 @@ export default function TransactionsPage() {
   const lastCreatedAt = useTransactionStore((state) => state.lastCreatedAt)
   const notifyCreated = useTransactionStore((state) => state.notifyCreated)
   const { categories, load: loadCategories } = useCategoryStore()
+  const members = useUserStore((s) => s.members)
+  const me = useUserStore((s) => s.me)
+  const loadUsers = useUserStore((s) => s.load)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    Promise.all([getTransactionsApi(), loadCategories()])
+    Promise.all([getTransactionsApi(), loadCategories(), loadUsers()])
       .then(([data]) => {
         if (!cancelled) setTransactions(data)
       })
@@ -54,6 +59,12 @@ export default function TransactionsPage() {
       cancelled = true
     }
   }, [lastCreatedAt])
+
+  const userMap = useMemo(() => {
+    const map = new Map<number, typeof members[number]>()
+    members.forEach((u) => map.set(u.id, u))
+    return map
+  }, [members])
 
   const emojiMap = useMemo(() => {
     const map = new Map<string, string>()
@@ -288,7 +299,16 @@ export default function TransactionsPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium text-gray-900 truncate">{tx.title}</div>
-                              <div className="text-[11px] text-gray-400">{tx.category}</div>
+                              <div className="flex items-center gap-1.5 text-[11px] text-gray-400 mt-1">
+                                <span>{tx.category}</span>
+                                <span className="text-gray-300">·</span>
+                                <Avatar user={userMap.get(tx.userId)} size={18} />
+                                <span className="font-medium text-gray-500 leading-none">
+                                  {userMap.get(tx.userId)?.id === me?.id
+                                    ? '나'
+                                    : userMap.get(tx.userId)?.name ?? '파트너'}
+                                </span>
+                              </div>
                             </div>
                             <div
                               className={`text-sm font-semibold flex-shrink-0 ${

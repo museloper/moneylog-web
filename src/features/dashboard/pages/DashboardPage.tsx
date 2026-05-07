@@ -5,6 +5,8 @@ import type { Transaction } from '@/features/dashboard/types'
 import { getTransactionsApi } from '@/features/transactions/api'
 import { useTransactionStore } from '@/features/transactions/store'
 import { useCategoryStore } from '@/features/settings/store'
+import { useUserStore } from '@/features/users/store'
+import type { UserProfile } from '@/features/users/api'
 
 import BalanceCard from '@/features/dashboard/components/BalanceCard'
 import QuickStatsCard from '@/features/dashboard/components/QuickStatsCard'
@@ -30,11 +32,14 @@ export default function DashboardPage() {
 
   const lastCreatedAt = useTransactionStore((state) => state.lastCreatedAt)
   const { categories, load: loadCategories } = useCategoryStore()
+  const members = useUserStore((s) => s.members)
+  const me = useUserStore((s) => s.me)
+  const loadUsers = useUserStore((s) => s.load)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    Promise.all([getTransactionsApi(), loadCategories()])
+    Promise.all([getTransactionsApi(), loadCategories(), loadUsers()])
       .then(([data]) => {
         if (!cancelled) setTransactions(data)
       })
@@ -56,6 +61,12 @@ export default function DashboardPage() {
     })
     return map
   }, [categories])
+
+  const userMap = useMemo(() => {
+    const map = new Map<number, UserProfile>()
+    members.forEach((u) => map.set(u.id, u))
+    return map
+  }, [members])
 
   const stats = useMemo(() => {
     const now = new Date()
@@ -135,7 +146,12 @@ export default function DashboardPage() {
       />
 
       {/* 최근 거래 */}
-      <TransactionCard transactions={stats.monthTransactions} emojiMap={emojiMap} />
+      <TransactionCard
+        transactions={stats.monthTransactions}
+        emojiMap={emojiMap}
+        userMap={userMap}
+        meId={me?.id}
+      />
 
       {/* TOP 카테고리 */}
       <TopCategoriesCard transactions={stats.monthTransactions} emojiMap={emojiMap} />

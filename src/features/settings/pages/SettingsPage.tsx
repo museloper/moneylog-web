@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom'
 
 import { useCategoryStore } from '@/features/settings/store'
 import { useAuthStore } from '@/features/auth/store'
+import { useUserStore } from '@/features/users/store'
 import EmojiPicker from '@/features/settings/components/EmojiPicker'
+import ProfileSection from '@/features/settings/components/ProfileSection'
 import type { CategoryItem } from '@/features/settings/api'
 
 type TransactionType = 'income' | 'expense'
@@ -287,9 +289,12 @@ export default function SettingsPage() {
   const navigate = useNavigate()
   const logout = useAuthStore((state) => state.logout)
   const { categories, loaded, load, add, update, remove } = useCategoryStore()
+  const userLoaded = useUserStore((s) => s.loaded)
+  const loadUser = useUserStore((s) => s.load)
 
   useEffect(() => {
     load().catch(() => toast.error('카테고리를 불러오지 못했습니다'))
+    loadUser().catch(() => toast.error('프로필을 불러오지 못했습니다'))
   }, [])
 
   const expense = categories.filter((c) => c.type === 'expense')
@@ -304,8 +309,14 @@ export default function SettingsPage() {
     <div className="space-y-4">
       <div>
         <h1 className="text-base font-bold text-gray-900 mb-1">설정</h1>
-        <p className="text-[11px] text-gray-400">파트너와 공유되는 카테고리를 관리할 수 있어요</p>
+        <p className="text-[11px] text-gray-400">프로필과 카테고리를 관리할 수 있어요</p>
       </div>
+
+      {userLoaded ? (
+        <ProfileSection />
+      ) : (
+        <div className="h-32 rounded-2xl bg-gray-100 animate-pulse" />
+      )}
 
       {!loaded ? (
         <div className="space-y-3">
