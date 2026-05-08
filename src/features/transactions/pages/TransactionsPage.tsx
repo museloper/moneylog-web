@@ -1,37 +1,23 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Trash2, Receipt } from 'lucide-react'
+import { Trash2, Receipt } from 'lucide-react'
 import { toast } from 'sonner'
 
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
 import { getTransactionsApi, deleteTransactionApi } from '@/features/transactions/api'
 import { useTransactionStore } from '@/features/transactions/store'
 import { useCategoryStore } from '@/features/settings/store'
 import { useUserStore } from '@/features/users/store'
 import Avatar from '@/features/users/components/Avatar'
+import MonthHeader, { useMonthCursor } from '@/shared/components/MonthHeader'
+import { formatDateLabelLong } from '@/shared/utils/date'
+import { formatCurrency, formatSignedCurrency } from '@/shared/utils/format'
 
 type FilterType = 'all' | 'expense' | 'income'
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
-
-const formatDateLabel = (dateStr: string) => {
-  const d = new Date(dateStr)
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const target = new Date(d)
-  target.setHours(0, 0, 0, 0)
-  const diff = (today.getTime() - target.getTime()) / (1000 * 60 * 60 * 24)
-  if (diff === 0) return `오늘 · ${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`
-  if (diff === 1) return `어제 · ${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`
-}
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [cursor, setCursor] = useState(() => {
-    const d = new Date()
-    return { year: d.getFullYear(), month: d.getMonth() } // 0-indexed
-  })
+  const { cursor, goPrev, goNext, goToday, isCurrent } = useMonthCursor()
   const [filter, setFilter] = useState<FilterType>('all')
   const [confirmId, setConfirmId] = useState<number | null>(null)
 
@@ -108,19 +94,6 @@ export default function TransactionsPage() {
     return { income, expense, balance: income - expense }
   }, [monthTransactions])
 
-  const goPrevMonth = () => {
-    setCursor((c) => {
-      const m = c.month - 1
-      return m < 0 ? { year: c.year - 1, month: 11 } : { ...c, month: m }
-    })
-  }
-  const goNextMonth = () => {
-    setCursor((c) => {
-      const m = c.month + 1
-      return m > 11 ? { year: c.year + 1, month: 0 } : { ...c, month: m }
-    })
-  }
-
   const handleDelete = async (id: number) => {
     try {
       await deleteTransactionApi(id)
@@ -133,49 +106,15 @@ export default function TransactionsPage() {
     }
   }
 
-  const isCurrentMonth = (() => {
-    const now = new Date()
-    return cursor.year === now.getFullYear() && cursor.month === now.getMonth()
-  })()
-
   return (
     <div className="space-y-4">
-      {/* 월 네비게이터 */}
-      <div className="flex items-center justify-between bg-white border border-gray-100 rounded-2xl px-4 py-3">
-        <button
-          type="button"
-          onClick={goPrevMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 active:bg-gray-100 cursor-pointer"
-          aria-label="이전 달"
-        >
-          <ChevronLeft size={20} strokeWidth={2} />
-        </button>
-        <div className="text-center">
-          <div className="text-base font-semibold text-gray-900">
-            {cursor.year}년 {cursor.month + 1}월
-          </div>
-          {!isCurrentMonth && (
-            <button
-              type="button"
-              onClick={() => {
-                const now = new Date()
-                setCursor({ year: now.getFullYear(), month: now.getMonth() })
-              }}
-              className="text-[11px] text-brand-strong active:opacity-70 cursor-pointer"
-            >
-              이번 달로
-            </button>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={goNextMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 active:bg-gray-100 cursor-pointer"
-          aria-label="다음 달"
-        >
-          <ChevronRight size={20} strokeWidth={2} />
-        </button>
-      </div>
+      <MonthHeader
+        cursor={cursor}
+        onPrev={goPrev}
+        onNext={goNext}
+        onToday={goToday}
+        isCurrent={isCurrent}
+      />
 
       {/* 월간 요약 */}
       <div className="bg-white border border-gray-100 rounded-2xl p-5">
@@ -183,19 +122,19 @@ export default function TransactionsPage() {
           <div className="text-center">
             <div className="text-[11px] text-gray-400 mb-1">수입</div>
             <div className="text-sm font-bold text-emerald-600">
-              ₩{summary.income.toLocaleString()}
+              {formatCurrency(summary.income)}
             </div>
           </div>
           <div className="text-center">
             <div className="text-[11px] text-gray-400 mb-1">지출</div>
             <div className="text-sm font-bold text-rose-500">
-              ₩{summary.expense.toLocaleString()}
+              {formatCurrency(summary.expense)}
             </div>
           </div>
           <div className="text-center">
             <div className="text-[11px] text-gray-400 mb-1">잔액</div>
             <div className={`text-sm font-bold ${summary.balance >= 0 ? 'text-gray-900' : 'text-rose-500'}`}>
-              ₩{summary.balance.toLocaleString()}
+              {formatCurrency(summary.balance)}
             </div>
           </div>
         </div>
@@ -256,13 +195,13 @@ export default function TransactionsPage() {
             return (
               <div key={date}>
                 <div className="flex items-center justify-between px-2 mb-2">
-                  <div className="text-xs font-semibold text-gray-500">{formatDateLabel(date)}</div>
+                  <div className="text-xs font-semibold text-gray-500">{formatDateLabelLong(date)}</div>
                   <div
                     className={`text-xs font-medium ${
                       dayTotal >= 0 ? 'text-emerald-600' : 'text-rose-500'
                     }`}
                   >
-                    {dayTotal >= 0 ? '+' : '-'} ₩{Math.abs(dayTotal).toLocaleString()}
+                    {dayTotal >= 0 ? '+' : '-'} {formatCurrency(Math.abs(dayTotal))}
                   </div>
                 </div>
 
@@ -315,7 +254,7 @@ export default function TransactionsPage() {
                                 tx.type === 'income' ? 'text-emerald-600' : 'text-rose-500'
                               }`}
                             >
-                              {tx.type === 'income' ? '+' : '-'} ₩{tx.amount.toLocaleString()}
+                              {formatSignedCurrency(tx.amount, tx.type)}
                             </div>
                             <button
                               type="button"

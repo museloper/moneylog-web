@@ -1,8 +1,9 @@
 import { apiClient } from '@/shared/api/client'
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
+import type { TransactionType } from '@/shared/utils/accent'
 
 export interface CreateTransactionPayload {
-  type: 'income' | 'expense'
+  type: TransactionType
   amount: number
   title: string
   category: string

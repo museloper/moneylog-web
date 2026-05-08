@@ -1,4 +1,5 @@
 import { cardStyle } from '@/shared/ui/cardStyle'
+import { formatCurrency } from '@/shared/utils/format'
 
 interface Props {
   todayExpense: number
@@ -20,7 +21,7 @@ export default function QuickStatsCard({ todayExpense, weekExpense, dailyAverage
           <div key={item.label} className="text-center px-2">
             <div className="text-[11px] text-gray-400 mb-1">{item.label}</div>
             <div className="text-sm font-bold text-gray-900">
-              ₩{item.value.toLocaleString()}
+              {formatCurrency(item.value)}
             </div>
           </div>
         ))}

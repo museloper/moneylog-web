@@ -1,6 +1,7 @@
 import { cardStyle } from '@/shared/ui/cardStyle'
+import { formatCurrency } from '@/shared/utils/format'
 
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
 
 interface Props {
   transactions: Transaction[]
@@ -45,7 +46,7 @@ export default function TopCategoriesCard({ transactions, emojiMap }: Props) {
                     <span className="text-[11px] text-gray-400 flex-shrink-0">{percent}%</span>
                   </div>
                   <span className="text-sm font-semibold text-gray-900 flex-shrink-0">
-                    ₩{total.toLocaleString()}
+                    {formatCurrency(total)}
                   </span>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden ml-5">

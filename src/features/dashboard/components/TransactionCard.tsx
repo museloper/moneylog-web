@@ -3,9 +3,10 @@ import { ChevronRight } from 'lucide-react'
 
 import { cardStyle } from '@/shared/ui/cardStyle'
 
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
 import type { UserProfile } from '@/features/users/api'
 import Avatar from '@/features/users/components/Avatar'
+import { formatSignedCurrency } from '@/shared/utils/format'
 
 interface Props {
   transactions: Transaction[]
@@ -61,7 +62,7 @@ export default function TransactionCard({ transactions, emojiMap, userMap, meId 
                     tx.type === 'income' ? 'text-emerald-600' : 'text-rose-500'
                   }`}
                 >
-                  {tx.type === 'income' ? '+' : '-'} ₩{tx.amount.toLocaleString()}
+                  {formatSignedCurrency(tx.amount, tx.type)}
                 </div>
               </div>
             )

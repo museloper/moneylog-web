@@ -1,14 +1,11 @@
-export interface Balance {
-  income: number
-  expense: number
-}
+import type { TransactionType } from '@/shared/utils/accent'
 
 export interface Transaction {
   id: number
   title: string
   category: string
   amount: number
-  type: 'income' | 'expense'
+  type: TransactionType
   date: string
   userId: number
 }

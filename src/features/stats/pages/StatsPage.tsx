@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, TrendingDown, TrendingUp, Minus } from 'lucide-react'
+import { TrendingDown, TrendingUp, Minus } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   ResponsiveContainer,
@@ -17,10 +17,12 @@ import {
   Legend,
 } from 'recharts'
 
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
 import { getTransactionsApi } from '@/features/transactions/api'
 import { useTransactionStore } from '@/features/transactions/store'
 import { useCategoryStore } from '@/features/settings/store'
+import MonthHeader, { useMonthCursor } from '@/shared/components/MonthHeader'
+import { formatCurrency } from '@/shared/utils/format'
 
 const CATEGORY_COLORS = [
   '#3faf8e',
@@ -34,8 +36,6 @@ const CATEGORY_COLORS = [
   '#22c55e',
   '#3b82f6',
 ]
-
-const formatCurrency = (n: number) => `₩${n.toLocaleString()}`
 
 const sumByType = (txs: Transaction[]) => {
   let income = 0
@@ -82,10 +82,7 @@ function ChangeIndicator({ current, previous, invert }: ChangeIndicatorProps) {
 export default function StatsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
-  const [cursor, setCursor] = useState(() => {
-    const d = new Date()
-    return { year: d.getFullYear(), month: d.getMonth() }
-  })
+  const { cursor, goPrev, goNext, goToday, isCurrent } = useMonthCursor()
 
   const lastCreatedAt = useTransactionStore((state) => state.lastCreatedAt)
   const { categories, load: loadCategories } = useCategoryStore()
@@ -195,21 +192,6 @@ export default function StatsPage() {
     return months.map(({ label, income, expense }) => ({ label, income, expense }))
   }, [transactions, cursor])
 
-  const goPrev = () => {
-    setCursor((c) =>
-      c.month === 0 ? { year: c.year - 1, month: 11 } : { ...c, month: c.month - 1 },
-    )
-  }
-  const goNext = () => {
-    setCursor((c) =>
-      c.month === 11 ? { year: c.year + 1, month: 0 } : { ...c, month: c.month + 1 },
-    )
-  }
-  const isCurrent = (() => {
-    const now = new Date()
-    return cursor.year === now.getFullYear() && cursor.month === now.getMonth()
-  })()
-
   if (loading) {
     return (
       <div className="space-y-4">
@@ -223,42 +205,13 @@ export default function StatsPage() {
 
   return (
     <div className="space-y-4">
-      {/* 월 네비게이터 */}
-      <div className="flex items-center justify-between bg-white border border-gray-100 rounded-2xl px-4 py-3">
-        <button
-          type="button"
-          onClick={goPrev}
-          aria-label="이전 달"
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 active:bg-gray-100 cursor-pointer"
-        >
-          <ChevronLeft size={20} strokeWidth={2} />
-        </button>
-        <div className="text-center">
-          <div className="text-base font-semibold text-gray-900">
-            {cursor.year}년 {cursor.month + 1}월
-          </div>
-          {!isCurrent && (
-            <button
-              type="button"
-              onClick={() => {
-                const now = new Date()
-                setCursor({ year: now.getFullYear(), month: now.getMonth() })
-              }}
-              className="text-[11px] text-brand-strong active:opacity-70 cursor-pointer"
-            >
-              이번 달로
-            </button>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={goNext}
-          aria-label="다음 달"
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 active:bg-gray-100 cursor-pointer"
-        >
-          <ChevronRight size={20} strokeWidth={2} />
-        </button>
-      </div>
+      <MonthHeader
+        cursor={cursor}
+        onPrev={goPrev}
+        onNext={goNext}
+        onToday={goToday}
+        isCurrent={isCurrent}
+      />
 
       {/* 월간 요약 + 비교 */}
       <div className="bg-white border border-gray-100 rounded-2xl p-5 space-y-3">

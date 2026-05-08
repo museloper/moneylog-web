@@ -5,32 +5,8 @@ import { toast } from 'sonner'
 import { useTransactionStore } from '@/features/transactions/store'
 import { createTransaction } from '@/features/transactions/api'
 import { useCategoryStore } from '@/features/settings/store'
-import type { TransactionTypeValue } from '@/features/transactions/categories'
-
-const formatDateValue = (d: Date) => {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
-
-const todayString = () => formatDateValue(new Date())
-
-const yesterdayString = () => {
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  return formatDateValue(d)
-}
-
-const formatDateLabel = (dateStr: string) => {
-  const d = new Date(dateStr)
-  const today = todayString()
-  const yesterday = yesterdayString()
-  if (dateStr === today) return '오늘'
-  if (dateStr === yesterday) return '어제'
-  const weekdays = ['일', '월', '화', '수', '목', '금', '토']
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${weekdays[d.getDay()]})`
-}
+import { todayString, yesterdayString, formatDateLabel } from '@/shared/utils/date'
+import { ACCENT, type TransactionType } from '@/shared/utils/accent'
 
 const CLOSE_THRESHOLD = 120
 
@@ -39,7 +15,7 @@ export default function TransactionFormSheet() {
   const closeForm = useTransactionStore((state) => state.closeForm)
   const notifyCreated = useTransactionStore((state) => state.notifyCreated)
 
-  const [type, setType] = useState<TransactionTypeValue>('expense')
+  const [type, setType] = useState<TransactionType>('expense')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [title, setTitle] = useState('')
@@ -142,10 +118,7 @@ export default function TransactionFormSheet() {
     }
   }
 
-  const accentText = type === 'expense' ? 'text-rose-500' : 'text-emerald-600'
-  const accentBg = type === 'expense' ? 'bg-rose-500' : 'bg-emerald-600'
-  const accentBgSoft = type === 'expense' ? 'bg-rose-50' : 'bg-emerald-50'
-  const accentRing = type === 'expense' ? 'ring-rose-400' : 'ring-emerald-400'
+  const accent = ACCENT[type]
 
   return (
     <div
@@ -233,8 +206,8 @@ export default function TransactionFormSheet() {
                 value={formattedAmount}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 size={Math.max(formattedAmount.length, 1)}
-                className={`text-4xl font-bold focus:outline-none placeholder:text-gray-300 bg-transparent ${accentText}`}
-                style={{ caretColor: type === 'expense' ? '#f43f5e' : '#059669' }}
+                className={`text-4xl font-bold focus:outline-none placeholder:text-gray-300 bg-transparent ${accent.text}`}
+                style={{ caretColor: accent.caret }}
               />
             </label>
 
@@ -256,14 +229,14 @@ export default function TransactionFormSheet() {
                       onClick={() => setCategory(c.name)}
                       className={`flex flex-col items-center justify-center gap-1 py-3 rounded-2xl transition cursor-pointer ${
                         selected
-                          ? `${accentBgSoft} ring-2 ${accentRing}`
+                          ? `${accent.bgSoft} ring-2 ${accent.ring}`
                           : 'bg-gray-50 active:bg-gray-100'
                       }`}
                     >
                       <span className="text-2xl leading-none">{c.emoji ?? '📌'}</span>
                       <span
                         className={`text-[11px] font-medium truncate max-w-full px-1 ${
-                          selected ? accentText : 'text-gray-600'
+                          selected ? accent.text : 'text-gray-600'
                         }`}
                       >
                         {c.name}
@@ -291,7 +264,7 @@ export default function TransactionFormSheet() {
             <div>
               <div className="flex items-baseline justify-between mb-2">
                 <label className="text-xs font-medium text-gray-500">날짜</label>
-                <span className={`text-xs font-medium ${accentText}`}>
+                <span className={`text-xs font-medium ${accent.text}`}>
                   {formatDateLabel(date)}
                 </span>
               </div>
@@ -303,7 +276,7 @@ export default function TransactionFormSheet() {
                     onClick={() => setDate(d)}
                     className={`py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
                       date === d
-                        ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
+                        ? `${accent.bgSoft} ${accent.text} ring-1 ${accent.ring}`
                         : 'bg-gray-50 text-gray-600 active:bg-gray-100'
                     }`}
                   >
@@ -315,7 +288,7 @@ export default function TransactionFormSheet() {
                   onClick={() => dateInputRef.current?.showPicker?.()}
                   className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-medium transition cursor-pointer ${
                     date !== todayString() && date !== yesterdayString()
-                      ? `${accentBgSoft} ${accentText} ring-1 ${accentRing}`
+                      ? `${accent.bgSoft} ${accent.text} ring-1 ${accent.ring}`
                       : 'bg-gray-50 text-gray-600 active:bg-gray-100'
                   }`}
                 >
@@ -341,7 +314,7 @@ export default function TransactionFormSheet() {
               type="button"
               onClick={handleSubmit}
               disabled={submitting}
-              className={`w-full ${accentBg} text-white py-3.5 rounded-xl text-sm font-semibold active:opacity-90 transition disabled:opacity-50 cursor-pointer`}
+              className={`w-full ${accent.bg} text-white py-3.5 rounded-xl text-sm font-semibold active:opacity-90 transition disabled:opacity-50 cursor-pointer`}
             >
               {submitting ? '저장 중...' : '저장하기'}
             </button>

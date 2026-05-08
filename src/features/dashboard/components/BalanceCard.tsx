@@ -1,3 +1,5 @@
+import { formatCurrency } from '@/shared/utils/format'
+
 interface Props {
   income: number
   expense: number
@@ -25,7 +27,7 @@ export default function BalanceCard({ income, expense }: Props) {
         </div>
 
         <div className="text-3xl font-bold tracking-tight mb-5">
-          ₩{balance.toLocaleString()}
+          {formatCurrency(balance)}
         </div>
 
         {/* progress bar (수입 대비 지출) */}
@@ -44,11 +46,11 @@ export default function BalanceCard({ income, expense }: Props) {
         <div className="flex justify-between pt-3 border-t border-white/15">
           <div>
             <div className="text-[10px] text-white/70 mb-0.5">수입</div>
-            <div className="text-sm font-semibold">+ ₩{income.toLocaleString()}</div>
+            <div className="text-sm font-semibold">+ {formatCurrency(income)}</div>
           </div>
           <div className="text-right">
             <div className="text-[10px] text-white/70 mb-0.5">지출</div>
-            <div className="text-sm font-semibold">- ₩{expense.toLocaleString()}</div>
+            <div className="text-sm font-semibold">- {formatCurrency(expense)}</div>
           </div>
         </div>
       </div>

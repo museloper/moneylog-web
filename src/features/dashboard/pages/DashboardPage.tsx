@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 
-import type { Transaction } from '@/features/dashboard/types'
+import type { Transaction } from '@/features/transactions/types'
 import { getTransactionsApi } from '@/features/transactions/api'
 import { useTransactionStore } from '@/features/transactions/store'
 import { useCategoryStore } from '@/features/settings/store'
