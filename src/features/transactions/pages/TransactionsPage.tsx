@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Trash2, Receipt } from 'lucide-react'
+import { Trash2, Pencil, Receipt } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { Transaction } from '@/features/transactions/types'
@@ -23,6 +23,7 @@ export default function TransactionsPage() {
 
   const lastCreatedAt = useTransactionStore((state) => state.lastCreatedAt)
   const notifyCreated = useTransactionStore((state) => state.notifyCreated)
+  const openEdit = useTransactionStore((state) => state.openEdit)
   const { categories, load: loadCategories } = useCategoryStore()
   const members = useUserStore((s) => s.members)
   const me = useUserStore((s) => s.me)
@@ -256,6 +257,14 @@ export default function TransactionsPage() {
                             >
                               {formatSignedCurrency(tx.amount, tx.type)}
                             </div>
+                            <button
+                              type="button"
+                              onClick={() => openEdit(tx)}
+                              className="w-8 h-8 flex items-center justify-center rounded-full text-gray-300 active:text-blue-500 active:bg-gray-50 cursor-pointer flex-shrink-0"
+                              aria-label="수정"
+                            >
+                              <Pencil size={14} strokeWidth={2} />
+                            </button>
                             <button
                               type="button"
                               onClick={() => setConfirmId(tx.id)}

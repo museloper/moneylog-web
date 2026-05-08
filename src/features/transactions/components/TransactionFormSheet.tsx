@@ -3,7 +3,7 @@ import { X, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { useTransactionStore } from '@/features/transactions/store'
-import { createTransaction } from '@/features/transactions/api'
+import { createTransaction, updateTransactionApi } from '@/features/transactions/api'
 import { useCategoryStore } from '@/features/settings/store'
 import { todayString, yesterdayString, formatDateLabel } from '@/shared/utils/date'
 import { ACCENT, type TransactionType } from '@/shared/utils/accent'
@@ -12,8 +12,10 @@ const CLOSE_THRESHOLD = 120
 
 export default function TransactionFormSheet() {
   const isOpen = useTransactionStore((state) => state.isFormOpen)
+  const editTarget = useTransactionStore((state) => state.editTarget)
   const closeForm = useTransactionStore((state) => state.closeForm)
   const notifyCreated = useTransactionStore((state) => state.notifyCreated)
+  const isEditMode = editTarget !== null
 
   const [type, setType] = useState<TransactionType>('expense')
   const [amount, setAmount] = useState('')
@@ -32,11 +34,19 @@ export default function TransactionFormSheet() {
   // 시트가 열릴 때마다 입력 초기화 + 카테고리 로드
   useEffect(() => {
     if (isOpen) {
-      setType('expense')
-      setAmount('')
-      setCategory('')
-      setTitle('')
-      setDate(todayString())
+      if (editTarget) {
+        setType(editTarget.type)
+        setAmount(String(editTarget.amount))
+        setCategory(editTarget.category)
+        setTitle(editTarget.title)
+        setDate(editTarget.date)
+      } else {
+        setType('expense')
+        setAmount('')
+        setCategory('')
+        setTitle('')
+        setDate(todayString())
+      }
       setDragOffset(0)
       loadCategories()
     }
@@ -101,14 +111,25 @@ export default function TransactionFormSheet() {
 
     setSubmitting(true)
     try {
-      await createTransaction({
-        type,
-        amount: numericAmount,
-        category,
-        title: title.trim(),
-        date,
-      })
-      toast.success(type === 'income' ? '수입이 추가됐어요' : '지출이 추가됐어요')
+      if (isEditMode) {
+        await updateTransactionApi(editTarget!.id, {
+          type,
+          amount: numericAmount,
+          category,
+          title: title.trim(),
+          date,
+        })
+        toast.success('수정됐어요')
+      } else {
+        await createTransaction({
+          type,
+          amount: numericAmount,
+          category,
+          title: title.trim(),
+          date,
+        })
+        toast.success(type === 'income' ? '수입이 추가됐어요' : '지출이 추가됐어요')
+      }
       notifyCreated()
       closeForm()
     } catch (error) {
@@ -154,7 +175,7 @@ export default function TransactionFormSheet() {
           >
             <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-900">새 거래 추가</h2>
+              <h2 className="text-base font-semibold text-gray-900">{isEditMode ? '거래 수정' : '새 거래 추가'}</h2>
               <button
                 type="button"
                 onClick={closeForm}
@@ -324,7 +345,7 @@ export default function TransactionFormSheet() {
               disabled={submitting}
               className={`w-full ${accent.bg} text-white py-3.5 rounded-xl text-sm font-semibold active:opacity-90 transition disabled:opacity-50 cursor-pointer`}
             >
-              {submitting ? '저장 중...' : '저장하기'}
+              {submitting ? (isEditMode ? '수정 중...' : '저장 중...') : (isEditMode ? '수정하기' : '저장하기')}
             </button>
           </div>
         </div>

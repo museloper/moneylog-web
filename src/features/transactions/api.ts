@@ -20,6 +20,11 @@ export const getTransactionsApi = async (): Promise<Transaction[]> => {
   return response.data
 }
 
+export const updateTransactionApi = async (id: number, payload: CreateTransactionPayload): Promise<Transaction> => {
+  const response = await apiClient.patch(`/transactions/${id}`, payload)
+  return response.data
+}
+
 export const deleteTransactionApi = async (id: number): Promise<void> => {
   await apiClient.delete(`/transactions/${id}`)
 }
