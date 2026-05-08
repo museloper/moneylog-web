@@ -239,7 +239,10 @@ export default function StatsPage() {
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-sm font-semibold text-gray-900">일별 지출</h2>
           <span className="text-[11px] text-gray-400">
-            평균 ₩{Math.round(dailyData.reduce((a, d) => a + d.expense, 0) / dailyData.length).toLocaleString()}
+            평균 ₩{Math.round(
+              dailyData.reduce((a, d) => a + d.expense, 0) /
+              (isCurrent ? new Date().getDate() : dailyData.length)
+            ).toLocaleString()}
           </span>
         </div>
         {monthSums.expense === 0 ? (

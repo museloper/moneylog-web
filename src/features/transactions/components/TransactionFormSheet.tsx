@@ -197,18 +197,26 @@ export default function TransactionFormSheet() {
             </div>
 
             {/* 히어로 금액 디스플레이 */}
-            <label className="flex items-baseline justify-center gap-2 py-3 cursor-text">
-              <span className="text-3xl font-bold text-gray-300">₩</span>
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="0"
-                value={formattedAmount}
-                onChange={(e) => handleAmountChange(e.target.value)}
-                size={Math.max(formattedAmount.length, 1)}
-                className={`text-4xl font-bold focus:outline-none placeholder:text-gray-300 bg-transparent ${accent.text}`}
-                style={{ caretColor: accent.caret }}
-              />
+            <label className="flex items-center justify-center gap-0.5 py-3 cursor-text">
+              <span className="text-4xl font-bold text-gray-300 leading-none">₩</span>
+              <span className="relative inline-block">
+                {/* 보이지 않는 미러 텍스트로 래퍼 너비 결정 */}
+                <span
+                  className="block invisible whitespace-pre text-4xl font-bold leading-none pointer-events-none select-none"
+                  aria-hidden="true"
+                >
+                  {formattedAmount || '0'}
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
+                  value={formattedAmount}
+                  onChange={(e) => handleAmountChange(e.target.value)}
+                  className={`absolute inset-0 text-4xl font-bold leading-none focus:outline-none placeholder:text-gray-300 bg-transparent ${accent.text}`}
+                  style={{ caretColor: accent.caret }}
+                />
+              </span>
             </label>
 
             {/* 카테고리 그리드 */}
