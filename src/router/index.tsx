@@ -7,7 +7,7 @@ import RedirectIfAuth from '@/shared/routes/RedirectIfAuth'
 import AppLayout from '@/layouts/AppLayout'
 
 import LoginPage from '@/features/auth/pages/LoginPage'
-import OAuthCallbackPage from '@/features/auth/pages/OAuthCallbackPage'
+import RegisterPage from '@/features/auth/pages/RegisterPage'
 import CouplePage from '@/features/couple/pages/CouplePage'
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
 import SettingsPage from '@/features/settings/pages/SettingsPage'
@@ -20,21 +20,19 @@ const router = createBrowserRouter([
     element: <HomeRedirect />,
   },
   {
-    path: '/oauth/callback',
-    element: <OAuthCallbackPage />,
-  },
-  {
-    // 인증된 사용자는 로그인 및 회원가입 페이지에 접근할 수 없도록 설정
     element: <RedirectIfAuth />,
     children: [
       {
         path: '/login',
         element: <LoginPage />,
       },
+      {
+        path: '/register',
+        element: <RegisterPage />,
+      },
     ],
   },
   {
-    // 인증된 사용자만 접근할 수 있도록 설정
     element: <RequireAuth />,
     children: [
       {
@@ -42,7 +40,7 @@ const router = createBrowserRouter([
         element: <CouplePage />,
       },
       {
-        element: <AppLayout />, // 인증된 사용자에게 공통 레이아웃 제공
+        element: <AppLayout />,
         children: [
           {
             path: '/dashboard',
@@ -65,6 +63,5 @@ const router = createBrowserRouter([
     ],
   },
 ])
-
 
 export default router
